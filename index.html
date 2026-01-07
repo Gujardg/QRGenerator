@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Professional QR Code Generator</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- QRCode.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+
+<body class="min-h-screen p-4 flex items-center justify-center">
+
+    <div class="w-full max-w-5xl bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row">
+
+        <!-- Left Panel -->
+        <div class="w-full md:w-1/2 p-6 md:p-8 bg-white overflow-y-auto max-h-[90vh]">
+
+            <h1 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                <span class="bg-indigo-600 text-white p-1 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                    </svg>
+                </span>
+                QR Generator
+            </h1>
+
+            <div class="space-y-5">
+
+                <!-- Content Type -->
+                <div class="input-group">
+                    <label>1. Content Type</label>
+                    <div class="flex p-1 bg-gray-100 rounded-lg">
+                        <button id="btn-upi" class="flex-1 type-btn active" onclick="setType('upi')">UPI
+                            Payment</button>
+                        <button id="btn-url" class="flex-1 type-btn" onclick="setType('url')">Link / Text</button>
+                    </div>
+                    <input type="hidden" id="contentType" value="upi" />
+                </div>
+
+                <!-- Data Input -->
+                <div class="input-group">
+                    <label>2. Data</label>
+                    <input type="text" id="qrData" class="input-field" placeholder="recipient@upi"
+                        oninput="generateQRCode()" />
+                    <p id="helperText" class="text-xs text-gray-500 mt-1"></p>
+                </div>
+
+                <!-- Appearance -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="input-group">
+                        <label>Size (px)</label>
+                        <input type="number" id="size" value="300" min="150" max="1000" class="input-field"
+                            oninput="generateQRCode()" />
+                    </div>
+                    <div class="input-group">
+                        <label>Dot Color</label>
+                        <select id="dotColor" class="input-field" onchange="generateQRCode()">
+                            <option value="#000000">Black</option>
+                            <option value="#1e3a8a">Dark Blue</option>
+                            <option value="#b91c1c">Dark Red</option>
+                            <option value="#ffffff">White (for dark BG)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Background Image -->
+                <div class="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="font-bold text-gray-700">Background Image</span>
+                        <label class="switch">
+                            <input type="checkbox" id="logoToggle" checked onchange="generateQRCode()" />
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="space-y-3">
+                        <input type="file" id="logoImageFile" accept="image/*" class="hidden"
+                            onchange="handleLogoUpload(event)" />
+
+                        <div class="flex gap-2">
+                            <button onclick="document.getElementById('logoImageFile').click()" class="btn">📁
+                                Upload</button>
+                            <button onclick="clearLogoUpload()" class="btn btn-red">✕</button>
+                        </div>
+
+                        <p id="fileName" class="text-xs text-gray-500 truncate h-4">Default Placeholder</p>
+
+                        <label class="flex justify-between text-xs text-gray-600 mb-1">
+                            <span>Image Fade</span>
+                            <span id="opacityValue">20%</span>
+                        </label>
+                        <input type="range" id="bgOpacity" min="0" max="0.9" step="0.1" value="0.2"
+                            oninput="updateOpacityDisplay(); generateQRCode()" />
+                    </div>
+                </div>
+
+                <button id="downloadBtn" onclick="downloadQRCode()" class="download-btn">
+                    Download High Quality PNG
+                    <div id="dlSpinner" class="spinner hidden"></div>
+                </button>
+
+            </div>
+        </div>
+
+        <!-- Right Panel -->
+        <div class="w-full md:w-1/2 bg-gray-100 flex flex-col items-center justify-center p-8 border-l border-gray-200">
+            <h2 class="text-sm uppercase tracking-wider font-semibold text-gray-500 mb-6">Live Preview</h2>
+
+            <div id="qrPreviewArea">
+                <div id="qrBackgroundLayer"></div>
+                <div id="qrOverlayLayer"></div>
+                <div id="qrcode"></div>
+            </div>
+
+            <p id="errorMsg" class="text-red-500 mt-4 text-sm font-medium text-center hidden"></p>
+        </div>
+    </div>
+
+    <!-- JS -->
+    <script src="script.js"></script>
+
+</body>
+
+</html>
